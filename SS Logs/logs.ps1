@@ -1,6 +1,7 @@
 # Richiede privilegi amministratore
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-    Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+    $scriptPath = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
+    Start-Process PowerShell -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "`"$scriptPath`"" -Verb RunAs
     exit
 }
 
@@ -46,6 +47,8 @@ Write-Host "[*] Apertura cartelle Minecraft..." -ForegroundColor Yellow
 $paths = @(
     "$env:APPDATA\.minecraft",
     "$env:USERPROFILE\.lunarclient",
+    "$env:USERPROFILE\.lunarclient\offline\multiver\logs",
+    "$env:USERPROFILE\.lunarclient\profiles",
     "$env:APPDATA\.Salwyrr"
 )
 
