@@ -93,41 +93,38 @@ if ($confirm.ToUpper() -eq "S") {
 Start-Sleep -Milliseconds 500
 
 # ── 4. Installazione tools ─────────────────────────────────────────────────────
-Write-Host ""
-Write-Host "                 Vuoi installare qualcosa?" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "                 [1] Solo WinRAR"
-Write-Host "                 [2] Solo PreviousFilesRecovery"
-Write-Host "                 [9] Entrambi"
-Write-Host "                 [0] Niente"
-Write-Host ""
-$choice = Read-Host "                 >>>"
+do {
+    Write-Host ""
+    Write-Host "                 Vuoi installare qualcosa?" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "                 [1] Solo WinRAR"
+    Write-Host "                 [2] Solo PreviousFilesRecovery"
+    Write-Host "                 [9] Entrambi"
+    Write-Host "                 [0] Esci"
+    Write-Host ""
+    $choice = Read-Host "                 >>>"
 
-switch ($choice.ToUpper()) {
-    "1" {
-        Write-Host "[*] Installazione WinRAR..." -ForegroundColor Yellow
-        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-        Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/winrar.ps1" | Invoke-Expression
+    switch ($choice.ToUpper()) {
+        "1" {
+            Write-Host "[*] Installazione WinRAR..." -ForegroundColor Yellow
+            Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+            Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/winrar.ps1" | Invoke-Expression
+        }
+        "2" {
+            Write-Host "[*] Installazione PreviousFilesRecovery..." -ForegroundColor Yellow
+            Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+            Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/pfile.ps1" | Invoke-Expression
+        }
+        "9" {
+            Write-Host "[*] Installazione WinRAR..." -ForegroundColor Yellow
+            Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+            Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/winrar.ps1" | Invoke-Expression
+            Write-Host "[*] Installazione PreviousFilesRecovery..." -ForegroundColor Yellow
+            Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/pfile.ps1" | Invoke-Expression
+        }
+        "0" {}
+        default {
+            Write-Host "[-] Scelta non valida." -ForegroundColor Red
+        }
     }
-    "2" {
-        Write-Host "[*] Installazione PreviousFilesRecovery..." -ForegroundColor Yellow
-        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-        Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/pfile.ps1" | Invoke-Expression
-    }
-    "9" {
-        Write-Host "[*] Installazione WinRAR..." -ForegroundColor Yellow
-        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-        Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/winrar.ps1" | Invoke-Expression
-        Write-Host "[*] Installazione PreviousFilesRecovery..." -ForegroundColor Yellow
-        Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/pfile.ps1" | Invoke-Expression
-    }
-    "0" {
-        Write-Host "[*] Nessuna installazione." -ForegroundColor DarkGray
-    }
-    default {
-        Write-Host "[-] Scelta non valida." -ForegroundColor Red
-    }
-}
-
-Write-Host ""
-Read-Host "Premi Invio per chiudere"
+} while ($choice -ne "0")
