@@ -1,7 +1,7 @@
 # Richiede privilegi amministratore
 if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
     $scriptUrl = "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/SS%20Logs/logs.ps1"
-    Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force; irm '$scriptUrl' | iex`"" -Verb RunAs
+    Start-Process PowerShell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -NoExit -Command `"try { Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force; irm '$scriptUrl' | iex } catch { Write-Host `$_ -ForegroundColor Red; Read-Host 'Errore - Invio per chiudere' }`"" -Verb RunAs
     exit
 }
 
