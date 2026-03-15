@@ -1,5 +1,4 @@
 $url = "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-720.exe"
-
 $outputPath = "$env:TEMP\winrar-installer.exe"
 $logFile = "$env:TEMP\winrar-install.log"
 $winrarPath = "C:\Program Files\WinRAR\WinRAR.exe"
@@ -39,26 +38,39 @@ try {
 }
 
 try {
-    Log-Message "Registering file associations in registry..."
+    Log-Message "Registering file associations in registry (HKLM)..."
 
     $extensions = @(".rar", ".zip", ".7z", ".tar", ".gz", ".iso")
+    $classNames = @{
+        ".rar" = "WinRAR.RAR"
+        ".zip" = "WinRAR.ZIP"
+        ".7z"  = "WinRAR.7Z"
+        ".tar" = "WinRAR.TAR"
+        ".gz"  = "WinRAR.GZ"
+        ".iso" = "WinRAR.ISO"
+    }
 
     foreach ($ext in $extensions) {
-        New-Item -Path "HKCU:\Software\Classes\$ext" -Force | Out-Null
-        Set-ItemProperty -Path "HKCU:\Software\Classes\$ext" -Name "(Default)" -Value "WinRAR"
+        $className = $classNames[$ext]
 
-        New-Item -Path "HKCU:\Software\Classes\WinRAR\shell\open\command" -Force | Out-Null
-        Set-ItemProperty -Path "HKCU:\Software\Classes\WinRAR\shell\open\command" -Name "(Default)" -Value "`"$winrarPath`" `"%1`""
+        New-Item -Path "HKLM:\Software\Classes\$ext" -Force | Out-Null
+        Set-ItemProperty -Path "HKLM:\Software\Classes\$ext" -Name "(Default)" -Value $className
 
-        New-Item -Path "HKCU:\Software\Classes\$ext\shell\open\command" -Force | Out-Null
-        Set-ItemProperty -Path "HKCU:\Software\Classes\$ext\shell\open\command" -Name "(Default)" -Value "`"$winrarPath`" `"%1`""
+        New-Item -Path "HKLM:\Software\Classes\$className" -Force | Out-Null
+        Set-ItemProperty -Path "HKLM:\Software\Classes\$className" -Name "(Default)" -Value "WinRAR Archive"
+
+        New-Item -Path "HKLM:\Software\Classes\$className\shell\open\command" -Force | Out-Null
+        Set-ItemProperty -Path "HKLM:\Software\Classes\$className\shell\open\command" -Name "(Default)" -Value "`"$winrarPath`" `"%1`""
+
+        New-Item -Path "HKLM:\Software\Classes\$className\DefaultIcon" -Force | Out-Null
+        Set-ItemProperty -Path "HKLM:\Software\Classes\$className\DefaultIcon" -Name "(Default)" -Value "`"$winrarPath`",0"
     }
 
     $code = @"
     [DllImport("shell32.dll")]
     public static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
 "@
-    $shell = Add-Type -MemberDefinition $code -Name "Shell" -Namespace "Win32" -PassThru
+    $shell = Add-Type -MemberDefinition $code -Name "Shell32" -Namespace "Win32" -PassThru
     $shell::SHChangeNotify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
 
     Log-Message "File associations registered successfully."
