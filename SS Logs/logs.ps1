@@ -37,14 +37,26 @@ do {
 } while ($rec.ToUpper() -ne "S")
 
 # ── 1. File nascosti + Cestino ────────────────────────────────────────────────
-Write-Host "[*] Abilitazione file nascosti e file di sistema..." -ForegroundColor Yellow
-$explorerKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-Set-ItemProperty -Path $explorerKey -Name Hidden -Value 1
-Set-ItemProperty -Path $explorerKey -Name ShowSuperHidden -Value 1
-Write-Host "[+] File nascosti e file di sistema visibili." -ForegroundColor Green
-Write-Host "[*] Apertura Cestino..." -ForegroundColor Yellow
-Start-Process explorer.exe -ArgumentList "C:\`$Recycle.Bin"
-Write-Host "[+] Cestino aperto." -ForegroundColor Green
+$confirmCestino = Read-Host "                 Aprire il Cestino e mostrare file nascosti? [S/N]"
+if ($confirmCestino.ToUpper() -eq "S") {
+    Write-Host "[*] Abilitazione file nascosti e file di sistema..." -ForegroundColor Yellow
+    $explorerKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
+    Set-ItemProperty -Path $explorerKey -Name Hidden -Value 1
+    Set-ItemProperty -Path $explorerKey -Name ShowSuperHidden -Value 1
+
+    Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Milliseconds 1000
+    Start-Process explorer.exe
+
+    Write-Host "[+] File nascosti e file di sistema visibili." -ForegroundColor Green
+    Start-Sleep -Milliseconds 1500
+
+    Write-Host "[*] Apertura Cestino..." -ForegroundColor Yellow
+    Start-Process explorer.exe -ArgumentList "C:\`$Recycle.Bin"
+    Write-Host "[+] Cestino aperto." -ForegroundColor Green
+} else {
+    Write-Host "[*] Cestino saltato." -ForegroundColor DarkGray
+}
 
 Start-Sleep -Milliseconds 500
 
@@ -99,6 +111,7 @@ do {
     Write-Host ""
     Write-Host "                 [1] Solo WinRAR"
     Write-Host "                 [2] Solo PreviousFilesRecovery"
+    Write-Host "                 [3] SystemInfo"
     Write-Host "                 [9] Entrambi"
     Write-Host "                 [0] Esci"
     Write-Host ""
@@ -114,6 +127,9 @@ do {
             Write-Host "[*] Installazione PreviousFilesRecovery..." -ForegroundColor Yellow
             Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
             Invoke-RestMethod "https://raw.githubusercontent.com/Indifferenzah/CoralMC/refs/heads/main/Stringhe/pfile.ps1" | Invoke-Expression
+        }
+        "3" {
+            Start-Process cmd.exe -ArgumentList "/k systeminfo" -Verb RunAs
         }
         "9" {
             Write-Host "[*] Installazione WinRAR..." -ForegroundColor Yellow
