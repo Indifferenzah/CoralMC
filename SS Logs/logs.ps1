@@ -88,7 +88,8 @@ if ($confirm.ToUpper() -eq "S") {
         "$env:USERPROFILE\.lunarclient\profiles\badlion",
         "$env:USERPROFILE\.lunarclient\profiles\vanilla",
         "$env:APPDATA\.Salwyrr\logs",
-        "$env:APPDATA\.tlauncher\legacy\Minecraft\game\logs"
+        "$env:APPDATA\.tlauncher\legacy\Minecraft\game\logs",
+        "$env:APPDATA\ModrinthApp\profiles"
     )
     foreach ($path in $paths) {
         if (Test-Path $path) {
